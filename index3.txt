@@ -1,0 +1,72 @@
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./serviceAccountKeys.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  
+});
+
+//read data from database
+
+const db = admin.firestore();
+let customerRef = db.collection("employee");
+customerRef.get().then((querySnapshot) => {
+     querySnapshot.forEach(document => {
+         console.log(document.data());
+
+     })
+ })
+
+
+//add data to databse
+
+const db = admin.firestore();
+
+ const data = {
+  id:6,
+  name:"yoshitha",
+  age:33,
+  address:"america"
+  }
+  db.collection("employee").doc(data.id.toString()).set(data);
+
+//update data
+
+ const db = admin.firestore();
+ const data = {
+    id:1,
+    name:"anjula",
+    age:30,
+    address:"horana",
+    salery:18000
+  }
+ db.collection("employee").doc(data.id.toString()).set(data);
+
+//delete data
+
+ const db = admin.firestore();
+ db.collection("employee").doc("3").delete().then(res =>{
+   console.log("!!!!!Document deleted successfully!!!!!")
+ })
+
+//create multiple data (Batch data
+
+const db = admin.firestore();
+const batch = db.batch();
+const employee3 = db.collection("employee").doc("3"); //this will be newly added to db
+const employee4 = db.collection("employee").doc("4"); // this will be replaced (already have id 4 in db)
+const employee5 = db.collection("employee").doc("5"); // this will be replaced (already have id 5 in db)
+const employee6 = db.collection("employee").doc("6"); // this will be replaced (already have id 6 in db)
+const employee7 = db.collection("employee").doc("7"); //this will be newly added to db
+
+batch.set(employee3,{id:3, name:"dushan", age:24, address:"kandy"});
+batch.set(employee4,{id:4, name:"amila", age:24, address:"kurunegala"});
+batch.set(employee5,{id:5, name:"supun", age:45, address:"galle"});
+batch.set(employee6,{id:6, name:"kamal", age:75, address:"kegalle"});
+batch.set(employee7,{id:7, name:"piyal", age:35, address:"kandy"});
+
+batch.commit().then(res => {
+  console.log("!!!Batch data added!!!")
+});
+
